@@ -319,6 +319,8 @@ void LevelManagerClass::Frame()
 
 	mouse->Update();
 
+	entityStorage->GetEntityByName("Player")->GetComponent<Transform>()->position = point3d(eval(10.0f), eval(5.0f), eval(5.0f));
+
 	UpdateTestAnimationToggle();
 
 	interp::UpdateTweens();

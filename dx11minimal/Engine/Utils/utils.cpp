@@ -8,6 +8,9 @@
 using namespace std;
 using namespace DirectX;
 
+//#undef min
+//#undef max
+
 namespace {
     point3d GetRatioScale(ScreenAspectRatio ratio, const point3d& frameScale)
     {
@@ -460,8 +463,8 @@ point3d rgbToHsl(const point3d& rgb) {
     float g = rgb.y;
     float b = rgb.z;
 
-    float maxVal = max(r, g, b);
-    float minVal = min(r, g, b);
+    float maxVal = max(r, max(g, b));
+    float minVal = min(r, max(g, b));
     float h = 0.0f, s = 0.0f, l = (maxVal + minVal) / 2.0f;
 
     if (maxVal != minVal) {

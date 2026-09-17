@@ -1,5 +1,8 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 
+#define LivePT_EditMode true
+#define LivePT_WheelEditMode true
+
 #include "Framework/framework.h"
 #include <stdexcept>
 //#include "math.h"
