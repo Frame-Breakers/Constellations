@@ -62,6 +62,8 @@ public:
 private:
 	World* m_World;
 	EntityStorage* entityStorage;
+	double time0 = timer::currentTime - 600;
+	double currentTime;
 
 #ifdef _EDITOR
 	EditorClass* editor;

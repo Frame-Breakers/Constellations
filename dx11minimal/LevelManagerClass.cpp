@@ -458,6 +458,35 @@ void LevelManagerClass::Frame()
 		return;
 
 	mouse->Update();
+	currentTime = timer::currentTime;
+	if (currentTime - time0 >= 500) 
+	{
+	time0 = timer::currentTime;
+	Entity* starEntity = entityStorage->CreateEntity("Star");
+	Collider* starCollider = starEntity->AddComponent < Collider>();
+	starCollider->isTouchable = true;
+	starCollider->softness = 0.7;
+	SphereCollider* sphereCollider = starEntity->AddComponent<SphereCollider>();
+	sphereCollider->softness = 0.7;
+	sphereCollider->isTouchable = true;
+	sphereCollider->radius = 3.0f;
+	sphereCollider->collisionGroup = CollisionFilter::Group::Player;
+	Transform* transform = starEntity->AddComponent<Transform>();
+	Star* star = starEntity->AddComponent<Star>();
+	star->color1 = point3d(1.0f, 0, 0);
+	star->color2 = point3d(0, 1.0f, 0);
+	star->crownColor = point3d(0, 0, 1.0f);
+	star->radius = 3.0f;
+	PhysicBody* physicBody = starEntity->AddComponent<PhysicBody>();
+	physicBody->velocity = point3d(100.0f, 0, 0);
+	physicBody->airFriction = 0;
+	SingleDamager* singleDamager = starEntity->AddComponent<SingleDamager>();
+	singleDamager->target = Fraction::Player;
+	singleDamager->damage = 5.0f;
+	singleDamager->destroyable = true;
+	DelayedDestroy* starDelayedDestroy = starEntity->AddComponent<DelayedDestroy>();
+	starDelayedDestroy->lifeTime = 5000;
+	}
 
 	UpdateTestAnimationToggle();
 
