@@ -101,8 +101,8 @@ bool LevelManagerClass::Initialize()
 
 	Entity* player = CreatePlayer();
 
-	worldFolder = entityStorage->LoadEntityFromFile("World");
-	//MapBuild::BuildMaze(); // COMMENTED RECENTLY
+	//worldFolder = entityStorage->LoadEntityFromFile("World");
+	MapBuild::BuildMaze(); // COMMENTED RECENTLY
 
 
 

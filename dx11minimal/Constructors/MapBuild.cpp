@@ -7,6 +7,7 @@
 #include "../Engine/Physic/Collision/SphereCollider.h"
 #include "../Engine/Physic/Gravitation/GravityPoint.h"
 #include "../Engine/Physic/Movement/RotatingSystem.h"
+#include "../Engine/Compute/Combat/Health.h"
 
 
 void MapBuild::BuildMaze() {
@@ -69,6 +70,9 @@ void MapBuild::CreateRotatingStar(const Transform& onTransform, float rotateSpee
 	SphereCollider* sphereCollider = starEntity->AddComponent<SphereCollider>();
 	sphereCollider->radius = 2.0f;
 	sphereCollider->collisionGroup = CollisionFilter::Group::HardBody;
+
+	Health* health = starEntity->AddComponent<Health>();
+	health->fraction = Fraction::Enemy;
 
 	/*GravityPoint* gravityPoint = starEntity->AddComponent<GravityPoint>();
 	gravityPoint->radius = 25.0f;
