@@ -10,9 +10,9 @@ struct Star : Component
 	float radius = 0.5f;
 	float crownRadius = 0.9f;
 
-	point3d color1 = point3d(1, 0.95, 0.25);
-	point3d color2 = point3d(0.75, 0.015, 0);
-	point3d crownColor = point3d(1, 0.95, 0.3);
+	point3d color1 = point3d(1.f, 0.95f, 0.25f);
+	point3d color2 = point3d(0.75f, 0.015f, 0.f);
+	point3d crownColor = point3d(1.f, 0.95f, 0.3f);
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Star,
