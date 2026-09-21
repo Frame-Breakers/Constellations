@@ -2,6 +2,7 @@
 
 #define LivePT_EditMode true
 #define LivePT_WheelEditMode true
+#define LPT_TRIGGER_BUTTON VK_LBUTTON
 
 #include "Framework/framework.h"
 #include <stdexcept>

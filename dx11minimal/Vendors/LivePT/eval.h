@@ -73,13 +73,29 @@ namespace LivePT {
     }
 
     struct ref {
-        using typeVariant = std::variant<int, float, bool>;
+        using typeVariant = std::variant<
+            bool,
+            char, unsigned char, signed char,
+            char16_t, wchar_t,
+            short, unsigned short,
+            int, unsigned int,
+            long, unsigned long,
+            long long, unsigned long long,
+            float, double
+        >;
+
         typeVariant value;
         bool loaded = false;
         std::string fileName;
         unsigned int counterID;
         EnumTypeDesc enumInfo;
+
+        // ЖЕЛЕЗНЫЕ ЛИМИТЫ ТИПА: Заполняются один раз компилятором при старте,
+        // чтобы DragNumericValue мгновенно зажимал мышку без хардкода логики
+        long long typeMinBound = 0;
+        long long typeMaxBound = 0;
     };
+
 
     inline std::vector<ref>& getParamDesc() {
         static std::vector<ref> instance;
@@ -103,6 +119,7 @@ namespace LivePT {
     inline void UpdateParamValue(int id, const std::string& newValue) {
         if (newValue.empty() || id < 0 || id >= static_cast<int>(paramDesc.size())) return;
 
+        // Защита от нетекстовых символов в буфере
         for (char c : newValue) {
             if (static_cast<unsigned char>(c) > 127) {
                 return;
@@ -112,9 +129,9 @@ namespace LivePT {
         std::visit([&newValue, id](auto& activeValue) {
             using T = std::decay_t<decltype(activeValue)>;
 
+            // ВЕТКА А: Обработка перечислений (Enum)
             if (paramDesc[id].enumInfo.isEnum) {
                 std::string cleanQuery = newValue;
-
                 cleanQuery.erase(std::remove_if(cleanQuery.begin(), cleanQuery.end(), ::isspace), cleanQuery.end());
 
                 size_t lastCols = cleanQuery.rfind("::");
@@ -137,6 +154,7 @@ namespace LivePT {
                 return;
             }
 
+            // ВЕТКА Б: Обработка булевых флагов (bool)
             if constexpr (std::is_same_v<T, bool>) {
                 std::string str = newValue;
                 std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) {
@@ -150,15 +168,33 @@ namespace LivePT {
                     activeValue = false;
                 }
             }
+            // ВЕТКА В: Обработка числовых литералов (Все стандартные типы C++)
             else {
-                std::stringstream ss(newValue);
-                T parsedValue;
-                if (ss >> parsedValue) {
-                    activeValue = parsedValue;
+                // ЖЕСТКИЙ ФИКС ДЛЯ ВСЕХ СИМВОЛЬНЫХ ТИПОВ (8-бит и 16-бит):
+                // std::stringstream считает char, wchar_t и char16_t за текстовые буквы.
+                // Чтобы строка "120" превратилась в число 120, а не в символ 'x',
+                // мы принудительно парсим текст через промежуточный int.
+                if constexpr (std::is_same_v<T, char> || std::is_same_v<T, unsigned char> || std::is_same_v<T, signed char> ||
+                    std::is_same_v<T, char16_t> || std::is_same_v<T, wchar_t>)
+                {
+                    std::stringstream ss(newValue);
+                    int parsedInt;
+                    if (ss >> parsedInt) {
+                        activeValue = static_cast<T>(parsedInt);
+                    }
+                }
+                // Для всех остальных типов (int, short, long, float, double) парсим нативно
+                else {
+                    std::stringstream ss(newValue);
+                    T parsedValue;
+                    if (ss >> parsedValue) {
+                        activeValue = parsedValue;
+                    }
                 }
             }
             }, paramDesc[id].value);
     }
+
 
     inline std::string NormalizePath(const char* fullPath) {
         std::string path(fullPath);
@@ -194,7 +230,9 @@ namespace LivePT {
             .loaded = false,
             .fileName = absolutePath,
             .counterID = 0,
-            .enumInfo = enumDesc
+            .enumInfo = enumDesc,
+            .typeMinBound = 0, // Инициализируем нулями, щит сам перезапишет их под нужный тип
+            .typeMaxBound = 0
             });
 
         fileMap[key] = paramID;
@@ -235,50 +273,105 @@ namespace LivePT {
             }();
     };
 
-    template <typename T, FixedString<260> AbsoluteFile, int Line, int Column>
-    struct EvalSyntaxShield {
-        T value;
-        constexpr EvalSyntaxShield(T val) : value(val) {}
+        // 1. Рантайм-щит теперь принимает два типа: TargetType (для базы данных и лимитов) 
+        // и TLiteral (для сохранения точности исходного значения)
+        template <typename TargetType, FixedString<260> AbsoluteFile, int Line, int Column>
+        struct EvalSyntaxShield {
+            template <typename TLiteral>
+            inline static TargetType Get(TLiteral literalValue) {
+                int target_id = GlobalEvalRegistry<TargetType, AbsoluteFile, Line, Column>::cached_id;
 
-        inline operator T() const {
-            int target_id = GlobalEvalRegistry<T, AbsoluteFile, Line, Column>::cached_id;
+                if (target_id < 0 || target_id >= static_cast<int>(paramDesc.size())) {
+                    return static_cast<TargetType>(literalValue);
+                }
 
-            if (target_id < 0 || target_id >= static_cast<int>(paramDesc.size())) return value;
+                // Инициализация variant и ЖЕСТКИХ ЛИМИТОВ на основе типа ЛЕВОЙ ЧАСТИ (TargetType)
+                if (!paramDesc[target_id].loaded) {
+                    if constexpr (std::is_enum_v<TargetType>) {
+                        paramDesc[target_id].value = static_cast<int>(literalValue);
+                    }
+                    else {
+                        paramDesc[target_id].value = static_cast<TargetType>(literalValue);
+                    }
 
-            if (!paramDesc[target_id].loaded) {
-                if constexpr (std::is_enum_v<T>) {
-                    paramDesc[target_id].value = static_cast<int>(value);
+                    if constexpr (std::integral<TargetType> || std::floating_point<TargetType>) {
+                        long long minB = static_cast<long long>((std::numeric_limits<TargetType>::min)());
+                        long long maxB = static_cast<long long>((std::numeric_limits<TargetType>::max)());
+                        if constexpr (std::floating_point<TargetType>) {
+                            minB = static_cast<long long>(-(std::numeric_limits<TargetType>::max)());
+                        }
+                        paramDesc[target_id].typeMinBound = minB;
+                        paramDesc[target_id].typeMaxBound = maxB;
+                    }
+
+                    paramDesc[target_id].loaded = true;
+                }
+
+                std::string absPath = NormalizePath(AbsoluteFile.c_str());
+                int real_id = getID(absPath + ":" + std::to_string(paramDesc[target_id].counterID));
+                if (real_id < 0 || real_id >= static_cast<int>(paramDesc.size())) {
+                    return static_cast<TargetType>(literalValue);
+                }
+
+                if constexpr (std::is_enum_v<TargetType>) {
+                    if (auto pVal = std::get_if<int>(&paramDesc[real_id].value)) {
+                        return static_cast<TargetType>(*pVal);
+                    }
                 }
                 else {
-                    paramDesc[target_id].value = value;
+                    if (auto pVal = std::get_if<TargetType>(&paramDesc[real_id].value)) {
+                        return *pVal;
+                    }
                 }
-                paramDesc[target_id].loaded = true;
+
+                return static_cast<TargetType>(literalValue);
             }
+        };
 
-            std::string absPath = NormalizePath(AbsoluteFile.c_str());
-            int real_id = getID(absPath + ":" + std::to_string(paramDesc[target_id].counterID));
-            if (real_id < 0 || real_id >= static_cast<int>(paramDesc.size())) return value;
+        // 2. Модернизированный детектор, который «помнит» исходный тип литерала
+            // 2. Модернизированный детектор, защищенный от дублирования сигнатур
+            // 2. Исправленный детектор, возвращающий полноценную поддержку enum class
+        template <typename LiteralType, FixedString<260> AbsoluteFile, int Line, int Column>
+        struct LazyTypeDetector {
+            LiteralType rawValue;
 
-            if constexpr (std::is_enum_v<T>) {
-                if (auto pVal = std::get_if<int>(&paramDesc[real_id].value)) {
-                    return static_cast<T>(*pVal);
+            constexpr LazyTypeDetector(LiteralType val) : rawValue(val) {}
+
+            // А. ВЕТКА ЛИМИТОВ: Срабатывает при явном присвоении параметров (например, .show = eval(true))
+            template <typename TargetType>
+            inline operator TargetType() const {
+                if constexpr (std::is_enum_v<LiteralType>) {
+                    // Если исходный литерал — енам, мы обязаны использовать его родной тип для сохранения рефлексии
+                    return static_cast<TargetType>(EvalSyntaxShield<LiteralType, AbsoluteFile, Line, Column>::Get(rawValue));
+                }
+                else {
+                    return EvalSyntaxShield<TargetType, AbsoluteFile, Line, Column>::Get(rawValue);
                 }
             }
-            else {
-                if (auto pVal = std::get_if<T>(&paramDesc[real_id].value)) return *pVal;
+
+            // Б. ВЕТКА МАТЕМАТИКИ И ОДНОРОДНЫХ ОПЕРАЦИЙ: Срабатывает для sin(eval(1)) или eval(ptype::circle)
+            inline operator LiteralType() const {
+                // Передаем LiteralType напрямую! Если это enum class, щит зарегистрирует его ИСТИННЫЙ тип,
+                // соберет через __FUNCSIG__ имена всех элементов, и контекстное меню в VS снова заработает!
+                return EvalSyntaxShield<LiteralType, AbsoluteFile, Line, Column>::Get(rawValue);
             }
 
-            return value;
-        }
-    };
+            // В. СФУЗИРОВАННЫЙ ОПЕРАТОР: Исключает дублирование сигнатур при double/float
+            template <typename TTarget>
+                requires (std::is_floating_point_v<TTarget> && !std::is_same_v<TTarget, LiteralType>)
+            inline operator TTarget() const {
+                return static_cast<TTarget>(operator LiteralType());
+            }
+        };
 
-}
 
-#define eval(value) ( \
-    LivePT::EvalSyntaxShield< \
-        decltype(value), \
+    }
+
+    // 3. Обновленный ультра-чистый макрос, пробрасывающий decltype(value) в шаблон детектора
+#define eval(value) \
+    LivePT::LazyTypeDetector< \
+        std::decay_t<decltype(value)>, \
         LivePT::FixedString<260>{__FILE__}, \
         static_cast<int>(__LINE__), \
         static_cast<int>(__builtin_COLUMN()) \
-    >(value) \
-)
+    >(value)
