@@ -61,6 +61,10 @@ DirectX::XMVECTOR point3d::toXMVector() const {
     return DirectX::XMVectorSet(x, y, z, 0);
 }
 
+DirectX::XMFLOAT4 point3d::toXMFloat4() const {
+    return DirectX::XMFLOAT4(x, y, z, 0);
+}
+
 
 bool point3d::operator==(const point3d& other) const {
     return fabs(x - other.x) < 0.001f &&

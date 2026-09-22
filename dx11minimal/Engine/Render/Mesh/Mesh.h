@@ -11,6 +11,8 @@ struct Mesh : Component
 	point3d scale = point3d(1.0f, 1.0f, 1.0f);
 	DirectX::XMMATRIX mRotation = DirectX::XMMatrixIdentity();
 
+	point3d color = point3d(1.f, 1.f, 1.f);
+
 	Rasterizer::cullmode cullMode = Rasterizer::cullmode::front;
 	int index = 0;
 

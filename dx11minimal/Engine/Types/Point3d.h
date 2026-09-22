@@ -25,6 +25,7 @@ struct point3d {
     point3d fract() const;
     float dot(const point3d& other) const;
     DirectX::XMVECTOR toXMVector() const;
+    DirectX::XMFLOAT4 toXMFloat4() const;
 
     bool operator==(const point3d& other) const;
     bool operator!=(const point3d& other) const;

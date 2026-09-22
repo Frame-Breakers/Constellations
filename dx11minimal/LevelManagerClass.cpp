@@ -113,18 +113,21 @@ bool LevelManagerClass::Initialize()
 	transform = entity->AddComponent<Transform>();
 	mesh = entity->AddComponent<Mesh>();
 	mesh->index = 9;
+	mesh->color = point3d(0, 1, 0);
 
 	entity = entityStorage->CreateEntity("arrow", dragger);
 	transform = entity->AddComponent<Transform>();
 	transform->mRotation = XMMatrixRotationAxis(XMVectorSet(1, 0, 0, 0), PI / 2);
 	mesh = entity->AddComponent<Mesh>();
 	mesh->index = 9;
+	mesh->color = point3d(0, 0, 1);
 
 	entity = entityStorage->CreateEntity("arrow", dragger);
 	transform = entity->AddComponent<Transform>();
-	transform->mRotation = XMMatrixRotationAxis(XMVectorSet(0, 0, 1, 0), PI / 2);
+	transform->mRotation = XMMatrixRotationAxis(XMVectorSet(0, 0, -1, 0), PI / 2);
 	mesh = entity->AddComponent<Mesh>();
 	mesh->index = 9;
+	mesh->color = point3d(1, 0, 0);
 
 
 	/////////////////////////

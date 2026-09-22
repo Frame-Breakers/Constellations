@@ -73,6 +73,9 @@ void MeshSystem::Update(EntityStorage& entityStorage, float deltaTime)
 						//ConstBuf::CreateVertexBuffer(15);
 
 						UpdateWorldMatrix(meshTransform);
+						ConstBuf::global[0] = mesh->color.toXMFloat4();
+						ConstBuf::Update(5, ConstBuf::global);
+						ConstBuf::ConstToPixel(5);
 
 						Rasterizer::Cull(SHOW_GRID ? Rasterizer::cullmode::wireframe : mesh->cullMode);
 
