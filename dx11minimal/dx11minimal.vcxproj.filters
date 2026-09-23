@@ -269,6 +269,7 @@
     <ClInclude Include="EditorTools\EditorUI.h" />
     <ClInclude Include="EditorTools\UI\TreeViewModel.h" />
     <ClInclude Include="EditorTools\UI\SceneExplorer.h" />
+    <ClInclude Include="Engine\Physic\Collision\MeshCollider.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resourses\Images\dx11minimal.ico">

@@ -56,6 +56,13 @@ void serializer::Initialize() {
         return j;
         };
 
+    components[typeid(MeshCollider).name()] = [](Component* comp) {
+        auto* c = static_cast<MeshCollider*>(comp);
+        json j = *c;
+        j["type"] = typeid(MeshCollider).name();
+        return j;
+        };
+
     components[typeid(GravityPoint).name()] = [](Component* comp) {
         auto* c = static_cast<GravityPoint*>(comp);
         json j = *c;
@@ -175,6 +182,13 @@ void serializer::Initialize() {
         j["type"] = typeid(Nebula).name();
         return j;
         };
+
+    components[typeid(Mesh).name()] = [](Component* comp) {
+        auto* c = static_cast<Mesh*>(comp);
+        json j = *c;
+        j["type"] = typeid(Mesh).name();
+        return j;
+        };
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -215,6 +229,11 @@ void deserializer::Initialize() {
     components[typeid(PlaneCollider).name()] = [](Entity* entity, const json& data) {
         PlaneCollider* c = entity->AddComponent<PlaneCollider>();
         *c = data.get<PlaneCollider>();
+        };
+
+    components[typeid(MeshCollider).name()] = [](Entity* entity, const json& data) {
+        MeshCollider* c = entity->AddComponent<MeshCollider>();
+        *c = data.get<MeshCollider>();
         };
 
     components[typeid(GravityPoint).name()] = [](Entity* entity, const json& data) {
@@ -303,6 +322,11 @@ void deserializer::Initialize() {
     components[typeid(Nebula).name()] = [](Entity* entity, const json& data) {
         Nebula* c = entity->AddComponent<Nebula>();
         *c = data.get<Nebula>();
+        };
+
+    components[typeid(Mesh).name()] = [](Entity* entity, const json& data) {
+        Mesh* c = entity->AddComponent<Mesh>();
+        *c = data.get<Mesh>();
         };
 
 }

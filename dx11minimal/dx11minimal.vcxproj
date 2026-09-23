@@ -308,6 +308,7 @@
     <ClInclude Include="Engine\Compute\AI\AISystem.h" />
     <ClInclude Include="Engine\Lib\class_name.h" />
     <ClInclude Include="Engine\Lib\logging.h" />
+    <ClInclude Include="Engine\Physic\Collision\MeshCollider.h" />
     <ClInclude Include="Engine\Physic\Movement\RotatingBody.h" />
     <ClInclude Include="Engine\Physic\Movement\RotatingSystem.h" />
     <ClInclude Include="Engine\Lib\serializer.h" />

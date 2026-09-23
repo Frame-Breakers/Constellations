@@ -18,6 +18,7 @@
 #include "SphereCollider.h"
 #include "PlaneCollider.h"
 #include "SurfaceCollider.h"
+#include "MeshCollider.h"
 
 #include "../../Compute/Combat/Health.h"
 #include "../../Compute/Combat/SingleDamager.h"

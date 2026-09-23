@@ -1,14 +1,14 @@
-#ifndef _SPHERE_COLLIDER_H_
-#define _SPHERE_COLLIDER_H_
+#ifndef _MESH_COLLIDER_H_
+#define _MESH_COLLIDER_H_
 
 #include "../../BasicComponents/collider.h"
 
-struct SphereCollider : Collider
+struct MeshCollider : Collider
 {
 	float radius = 1.0f;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SphereCollider,
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MeshCollider,
 	active,
 	friction,
 	softness,
