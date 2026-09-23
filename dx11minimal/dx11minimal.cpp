@@ -2,9 +2,9 @@
 
 #define LivePT_EditMode true // true for live text editing
 #define LivePT_WheelEditMode true // true for mouse mButton drag, switch, enums with context menu
-//#define LivePT_WindowManagement true
-//#define LivePT_AppToSecondaryDisplay false
-#define LPT_TRIGGER_BUTTON VK_LBUTTON  
+#define LivePT_WindowManagement true
+#define LivePT_AppToSecondaryDisplay false
+#define LPT_TRIGGER_BUTTON VK_LBUTTON
 
 #include "Framework/framework.h"
 #include <stdexcept>
@@ -34,6 +34,7 @@ DWORD battleStartTime;
 
 #include "Framework/resource.h"
 #include "LevelManagerClass.h"
+#include "Vendors/LivePT/LivePT.h"
 
 #define MAX_LOADSTRING 100
 //#define _BORDERED_WINDOW

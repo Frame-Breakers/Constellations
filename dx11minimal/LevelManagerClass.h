@@ -17,7 +17,6 @@
 
 #include "ecsHeaders.h"
 
-#include "Vendors/LivePT/LivePT.h"
 #ifdef _EDITOR
 #include "EditorTools/editorclass.h"
 #include "EditorTools/EditorUI.h"
