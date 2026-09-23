@@ -21,16 +21,16 @@ struct Mesh : Component
 	int pShader = 15;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Mesh,
-	active,
-	position,
-	scale,
-	mRotation,
-	color,
-	cullMode,
-	index,
-	textureName,
-	vShader,
-	pShader)
+//NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Mesh,
+//	active,
+//	position,
+//	scale,
+//	mRotation,
+//	color,
+//	cullMode,
+//	index,
+//	textureName,
+//	vShader,
+//	pShader)
 
 #endif
