@@ -366,3 +366,4 @@ FodyWeavers.xsd
 /dx11minimal/Shaders/cache
 /dx11minimal/Editor
 /Editor
+/Editor/dx11minimal.exe
