@@ -2,8 +2,8 @@
 
 #define LivePT_EditMode true // true for live text editing
 #define LivePT_WheelEditMode true // true for mouse mButton drag, switch, enums with context menu
-#define LivePT_WindowManagement true
-#define LivePT_AppToSecondaryDisplay false
+//#define LivePT_WindowManagement true
+//#define LivePT_AppToSecondaryDisplay false
 #define LPT_TRIGGER_BUTTON VK_LBUTTON  
 
 #include "Framework/framework.h"
@@ -118,6 +118,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             timer::nextFrameTime = timer::frameBeginTime + RENDER_DT;
 
             levelManager.Frame();
+            levelManager.entityStorage->GetEntityByName("Player")->GetComponent<Transform>()->position = point3d(eval(0.0f), eval(0.0f), eval(0.0f));
             LivePT::ProcessEdit();
 
             timer::frameEndTime = timer::GetCounter();

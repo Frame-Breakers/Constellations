@@ -48,6 +48,7 @@ class LevelManagerClass
 public:
 	WindowClass* window;
 	MouseClass* mouse;
+	EntityStorage* entityStorage;
 
 public:
 	LevelManagerClass();
@@ -62,7 +63,6 @@ public:
 
 private:
 	World* m_World;
-	EntityStorage* entityStorage;
 
 #ifdef _EDITOR
 	EditorClass* editor;
