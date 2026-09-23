@@ -115,6 +115,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             timer::frameBeginTime = timer::GetCounter();
             timer::nextFrameTime = timer::frameBeginTime + RENDER_DT;
 
+            LivePT::ProcessEdit();
             levelManager.Frame();
 
             timer::frameEndTime = timer::GetCounter();
