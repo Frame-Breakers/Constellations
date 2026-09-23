@@ -15,6 +15,7 @@ struct Mesh : Component
 
 	Rasterizer::cullmode cullMode = Rasterizer::cullmode::front;
 	int index = 0;
+	std::string textureName = "";
 
 	int vShader = 15;
 	int pShader = 15;
