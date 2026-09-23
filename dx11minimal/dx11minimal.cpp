@@ -1,8 +1,10 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 
-#define LivePT_EditMode true
-#define LivePT_WheelEditMode true
-#define LPT_TRIGGER_BUTTON VK_MBUTTON
+#define LivePT_EditMode true // true for live text editing
+#define LivePT_WheelEditMode true // true for mouse mButton drag, switch, enums with context menu
+#define LivePT_WindowManagement true
+#define LivePT_AppToSecondaryDisplay false
+#define LPT_TRIGGER_BUTTON VK_LBUTTON  
 
 #include "Framework/framework.h"
 #include <stdexcept>
@@ -115,8 +117,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             timer::frameBeginTime = timer::GetCounter();
             timer::nextFrameTime = timer::frameBeginTime + RENDER_DT;
 
-            LivePT::ProcessEdit();
             levelManager.Frame();
+            LivePT::ProcessEdit();
 
             timer::frameEndTime = timer::GetCounter();
             timer::frameRenderingDuration = timer::frameEndTime - timer::frameBeginTime;
