@@ -370,35 +370,45 @@ void PlayerController::ProcessMouse()
 				}*/
 
 				if (mouse->IsLButtonClicked()) {
+					starProjectileEntity = entityStorage->CreateEntity("Star");
+					sphereColliderProjectile = starProjectileEntity->AddComponent<SphereCollider>();
+					transformProjectile = starProjectileEntity->AddComponent<Transform>();
+					physicBodyProjectile = starProjectileEntity->AddComponent<PhysicBody>();
+					singleDamagerProjectile = starProjectileEntity->AddComponent<SingleDamager>();
+					starDelayedDestroyProjectile = starProjectileEntity->AddComponent<DelayedDestroy>();
+					particleEmitterProjectile = starProjectileEntity->AddComponent<ParticleEmitter>();
+					starProjectile = starProjectileEntity->AddComponent<Star>();
 					comboManager->StartHeldInput(ComboInputType::Light);
-					Entity* starProjectileEntity = entityStorage->CreateEntity("Star");
-					SphereCollider* sphereCollider = starProjectileEntity->AddComponent<SphereCollider>();
-					sphereCollider->softness = 0.7;
-					sphereCollider->isTouchable = false;
-					sphereCollider->radius = 3.0f;
+					sphereColliderProjectile->softness = 0.7;
+					sphereColliderProjectile->isTouchable = false;
+					sphereColliderProjectile->radius = 3.0f;
 					//sphereCollider->collisionGroup = CollisionFilter::Group::Player;
-					Transform* transform = starProjectileEntity->AddComponent<Transform>();
-					transform->position = GetWorldTransform(playerEntity).position;
-					Star* star = starProjectileEntity->AddComponent<Star>();
-					star->color1 = point3d(1.0f, 0, 0);
-					star->color2 = point3d(0, 1.0f, 0);
-					star->crownColor = point3d(0, 0, 1.0f);
-					star->radius = 3.0f;
-					PhysicBody* physicBody = starProjectileEntity->AddComponent<PhysicBody>();
-					physicBody->velocity = GetLookVectorFromMatrix(camera->GetMatrixRotation())*100;
-					physicBody->airFriction = 0;
-					SingleDamager* singleDamager = starProjectileEntity->AddComponent<SingleDamager>();
-					singleDamager->target = Fraction::Enemy;
-					singleDamager->damage = 50;
-					singleDamager->destroyable = true;
-					DelayedDestroy* starDelayedDestroy = starProjectileEntity->AddComponent<DelayedDestroy>();
-					starDelayedDestroy->lifeTime = 5000;
-					ParticleEmitter* particleEmitter = starProjectileEntity->AddComponent<ParticleEmitter>();
-					particleEmitter->lifetime = 1000;
-					particleEmitter->size = { 20.0f, 0.5f };
-					particleEmitter->color = point3d(1.0f, 0.5f, 0.0f);
-					particleEmitter->opacity = { 0.8f, 0.0f };
-					particleEmitter->rate = 70;
+					transformProjectile->position = GetWorldTransform(playerEntity).position;
+					starProjectile->color1 = point3d(1.0f, 0, 0);
+					starProjectile->color2 = point3d(0, 1.0f, 0);
+					starProjectile->crownColor = point3d(0, 0, 1.0f);
+					starProjectile->radius = 3.0f;
+					point3d vectorMouse = GetLookVectorFromMatrix(camera->GetMatrixRotation());
+					physicBodyProjectile->velocity = vectorMouse *100;
+					physicBodyProjectile->airFriction = 0;
+					singleDamagerProjectile->target = Fraction::Enemy;
+					singleDamagerProjectile->damage = 50;
+					singleDamagerProjectile->destroyable = true;
+					starDelayedDestroyProjectile->lifeTime = 5000;
+					particleEmitterProjectile->lifetime = 1000;
+					particleEmitterProjectile->size = { 20.0f, 0.5f };
+					particleEmitterProjectile->color = point3d(1.0f, 0.5f, 0.0f);
+					particleEmitterProjectile->opacity = { 0.8f, 0.0f };
+					particleEmitterProjectile->rate = 70;
+					currentTime = timer::currentTime;
+				}
+
+				if (mouse->IsLButtonDown()) {
+					if (starProjectileEntity != nullptr) {
+						if (timer::currentTime - currentTime > 1000)
+						
+						physicBodyProjectile->velocity = GetLookVectorFromMatrix(camera->GetMatrixRotation()) * 100;
+					}
 				}
 
 				if (mouse->IsRButtonClicked()) {

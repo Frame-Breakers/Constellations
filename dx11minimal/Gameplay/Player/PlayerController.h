@@ -81,7 +81,15 @@ private:
 
 	Entity* playerEntity;
 	Entity* ui;
-
+	Entity* starProjectileEntity = nullptr;
+	SphereCollider* sphereColliderProjectile = nullptr;
+	Transform* transformProjectile = nullptr;
+	PhysicBody* physicBodyProjectile = nullptr;
+	SingleDamager* singleDamagerProjectile = nullptr;
+	DelayedDestroy* starDelayedDestroyProjectile = nullptr;
+	ParticleEmitter* particleEmitterProjectile = nullptr;
+	double currentTime;
+	Star* starProjectile = nullptr;
 	Transform* playerTransform;
 	PhysicBody* playerPhysicBody;
 	PointCloud* playerPointCloud;
