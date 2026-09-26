@@ -89,6 +89,7 @@ private:
 	DelayedDestroy* starDelayedDestroyProjectile = nullptr;
 	ParticleEmitter* particleEmitterProjectile = nullptr;
 	double currentTime;
+	bool checkLength;
 	Star* starProjectile = nullptr;
 	Transform* playerTransform;
 	PhysicBody* playerPhysicBody;

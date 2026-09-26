@@ -370,6 +370,7 @@ void PlayerController::ProcessMouse()
 				}*/
 
 				if (mouse->IsLButtonClicked()) {
+					checkLength = false;
 					starProjectileEntity = entityStorage->CreateEntity("Star");
 					sphereColliderProjectile = starProjectileEntity->AddComponent<SphereCollider>();
 					transformProjectile = starProjectileEntity->AddComponent<Transform>();
@@ -389,13 +390,13 @@ void PlayerController::ProcessMouse()
 					starProjectile->crownColor = point3d(0, 0, 1.0f);
 					starProjectile->radius = 3.0f;
 					point3d vectorMouse = GetLookVectorFromMatrix(camera->GetMatrixRotation());
-					physicBodyProjectile->velocity = vectorMouse *100;
+					physicBodyProjectile->velocity = vectorMouse * 100;
 					physicBodyProjectile->airFriction = 0;
 					singleDamagerProjectile->target = Fraction::Enemy;
 					singleDamagerProjectile->damage = 50;
 					singleDamagerProjectile->destroyable = true;
 					starDelayedDestroyProjectile->lifeTime = 5000;
-					particleEmitterProjectile->lifetime = 1000;
+					particleEmitterProjectile->lifetime = 10000;
 					particleEmitterProjectile->size = { 20.0f, 0.5f };
 					particleEmitterProjectile->color = point3d(1.0f, 0.5f, 0.0f);
 					particleEmitterProjectile->opacity = { 0.8f, 0.0f };
@@ -405,9 +406,16 @@ void PlayerController::ProcessMouse()
 
 				if (mouse->IsLButtonDown()) {
 					if (starProjectileEntity != nullptr) {
-						if (timer::currentTime - currentTime > 1000)
-						
-						physicBodyProjectile->velocity = GetLookVectorFromMatrix(camera->GetMatrixRotation()) * 100;
+
+						if ((camera->position - transformProjectile->position).magnitude() >= 100 && !checkLength) {
+							
+							checkLength = true;
+						}
+						if (checkLength) {
+							point3d fpose = camera->position + GetLookVectorFromMatrix(camera->GetMatrixRotation()) * 101;
+							physicBodyProjectile->velocity = fpose - transformProjectile->position;
+						}
+
 					}
 				}
 
@@ -417,6 +425,7 @@ void PlayerController::ProcessMouse()
 
 				if (mouse->IsLButtonReleased()) {
 					comboManager->SaveInput(ComboInputType::Light);
+					physicBodyProjectile->velocity = GetLookVectorFromMatrix(camera->GetMatrixRotation()) * 100;
 				}
 
 				if (mouse->IsRButtonReleased()) {
